@@ -1,7 +1,6 @@
 class ball {
-    constructor(posx, posy, diameter, color) {
-        this.posx = posx
-        this.posy = posy
+    constructor(x, y, diameter, color) {
+        this.pos = createVector(x, y)
         this.dia = diameter;
         this.color = color;
         this.isHead = false;
@@ -11,6 +10,6 @@ class ball {
         fill(this.color);
         stroke(0);
         strokeWeight(2.5);
-        circle(this.posx, this.posy, this.dia)
+        circle(this.pos.x, this.pos.y, this.dia)
     }
 }

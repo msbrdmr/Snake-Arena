@@ -32,14 +32,14 @@ class Player {
         }
 
         let firstball = this.gethead();
-        this.HeadPosition = createVector(firstball.posx, firstball.posy);
+        this.HeadPosition = createVector(firstball.pos.x, firstball.pos.y);
         this.HeadNode = new ball(this.HeadPosition.x, this.HeadPosition.y, this.size, color(200, 35, 25))
         this.dir = new Vector(0, -1);
         this.angle = (Math.acos(this.dir.y) * 180) / Math.PI;
     }
     update() {
         this.balls.forEach(each => {
-            
+
             each.drawcircle();
         })
         this.HeadNode.drawcircle()
@@ -84,13 +84,13 @@ class Player {
         let tailnode = this.gettail(0);
 
         let pos = new Vector(this.HeadPosition.x + StepSize * this.dir.x, this.HeadPosition.y + StepSize * this.dir.y);
-        tailnode.posx = pos.x;
-        tailnode.posy = pos.y;
+        tailnode.pos.x = pos.x;
+        tailnode.pos.y = pos.y;
 
-        this.HeadPosition = new Vector(tailnode.posx, tailnode.posy);
-        
-        this.HeadNode.posx = this.HeadPosition.x
-        this.HeadNode.posy = this.HeadPosition.y
+        this.HeadPosition = new Vector(tailnode.pos.x, tailnode.pos.y);
+
+        this.HeadNode.pos.x = this.HeadPosition.x
+        this.HeadNode.pos.y = this.HeadPosition.y
         this.movestack();
     }
 
@@ -100,8 +100,8 @@ class Player {
         newnode.isTail = true;
         this.gettail(0).isTail = false;
         this.pushStart(newnode)
-        newnode.posx = this.temppos.x
-        newnode.posy = this.temppos.y
+        newnode.pos.x = this.temppos.x
+        newnode.pos.y = this.temppos.y
 
         this.ballcount++
     }

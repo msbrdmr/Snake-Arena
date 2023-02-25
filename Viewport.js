@@ -5,7 +5,7 @@ class Viewport {
     }
     update() {
 
-        let targetpos = createVector(this.target.HeadNode.posx, this.target.HeadNode.posy);
+        let targetpos = createVector(this.target.HeadNode.pos.x, this.target.HeadNode.pos.y);
 
         this.pos = p5.Vector.lerp(this.pos, targetpos, 0.01)
 
