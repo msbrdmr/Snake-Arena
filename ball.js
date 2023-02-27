@@ -3,6 +3,7 @@ class ball {
         this.pos = createVector(x, y)
         this.dia = diameter;
         this.color = color;
+        this.prevpos = this.pos;
         this.isHead = false;
         this.isTail = false;
     }

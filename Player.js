@@ -1,15 +1,18 @@
-
-
 class Player {
     constructor(x, y, ballcount, name, color, speed, size) {
         this.startpos = createVector(x, y)
-        this.ballcount = ballcount // length of snake
+        this.nodecount = ballcount // length of snake
         this.name = name;
         this.color = color
         this.balls = [];
         this.ballsize = 50;
         this.score = 0
         this.temppos;
+        this.sprint = false;
+        this.cansprint = true;
+        this.finished = false;
+        this.stepcount = 0;
+        this.isStarted;
         this.foodcount = 0;
         this.HeadPosition;
         this.HeadNode;
@@ -20,96 +23,60 @@ class Player {
         this.defaultspeed = speed;
     }
     init() {
-        for (let i = 0; i < this.ballcount; i++) {
-            this.balls.push(new ball(this.startpos.x, this.startpos.y - i * StepSize, this.size, this.color));
-            if (i == 0) {
-                this.balls[i].isTail = true
-                this.temppos = createVector(this.startpos.x, this.startpos.y - (i - (this.ballcount - 1)) * StepSize)
-            }
-            if (i == this.ballcount - 1) {
-                this.balls[i].isHead = true;
-            };
+        for (let i = 0; i < this.nodecount; i++) {
+            this.balls.push(new ball(this.startpos.x, this.startpos.y + i * StepSize, this.size, this.color))
         }
-
-        let firstball = this.gethead();
-        this.HeadPosition = createVector(firstball.pos.x, firstball.pos.y);
-        this.HeadNode = new ball(this.HeadPosition.x, this.HeadPosition.y, this.size, color(200, 35, 25))
-        this.dir = new Vector(0, -1);
+        this.HeadPosition = createVector(this.balls[0].pos.x, this.balls[0].pos.y);
+        this.HeadNode = this.balls[0]
+        this.HeadNode.color = color("red")
+        this.dir = new Vector(1, 0);
         this.angle = (Math.acos(this.dir.y) * 180) / Math.PI;
     }
-    update() {
-        this.balls.forEach(each => {
-
-            each.drawcircle();
-        })
-        this.HeadNode.drawcircle()
-    }
-    pushStart(tailnode) // will be used when new node is eaten
-    {
-        this.balls.splice(0, 0, tailnode);//ADD NODE TO 0 INDEX
-    }
-    pushEnd(HeadNode) {
-        if (this.balls.length != 0) {
-            this.balls.push(HeadNode);
-            this.balls[this.balls.length - 2].isHead = false;
-            this.balls[this.balls.length - 1].isHead = true;
-            this.balls[this.balls.length - 1].isTail = false;
+    draw() {
+        for (let i = this.balls.length - 1; i >= 0; i--) {
+            this.balls[i].drawcircle();
         }
     }
-    gettail(mode) {
-
-        if (mode == 0) {
-            if (this.balls.length != 0) return this.balls[0];
-            else return null;
+    move() {
+        for (let i = 0; i < this.balls.length; i++) {
+            if (i == 0) //Headnode
+            {
+                this.balls[i].prevpos = this.balls[i].pos
+                let newpos = createVector(this.balls[i].prevpos.x + StepSize * this.dir.x, this.balls[i].prevpos.y + StepSize * this.dir.y);
+                this.balls[i].pos = p5.Vector.lerp(this.balls[i].pos, newpos, this.speed)
+            }
+            else {
+                this.balls[i].prevpos = this.balls[i].pos
+                let newpos = this.balls[i - 1].prevpos;
+                this.balls[i].pos = p5.Vector.lerp(this.balls[i].pos, newpos, this.speed)
+                if (i == this.balls.length - 1) {
+                    this.temppos = this.balls[i].prevpos
+                }
+            }
         }
-        else if (mode == 1) {
-            if (this.balls.length != 0) return this.balls[1];
-            else return null;
-        }
-        else return null;
-    }
-    gethead() {
-        if (this.balls.length != 0) return this.balls[this.balls.length - 1];
-        else return null;
-    }
-    movestack() {
-        if (this.balls.length != 0) {
-            let tempnode = this.balls[0];
-            this.balls.splice(0, 1)// removes index 0
-            this.balls[0].isTail = true;
-            this.pushEnd(tempnode);
+
+        if (this.sprint) {
+            if (this.stepcount % 50 == 0) {
+
+                this.balls.pop()
+                this.stepcount = 0;
+            }
+            else if (this.stepcount % 10 == 0) {
+                this.poop(this.balls[this.balls.length - 1], 1)
+            }
+            this.stepcount++;
         }
     }
-    movesnake() {
-        let tailnode = this.gettail(0);
-
-        let pos = new Vector(this.HeadPosition.x + StepSize * this.dir.x, this.HeadPosition.y + StepSize * this.dir.y);
-        tailnode.pos.x = pos.x;
-        tailnode.pos.y = pos.y;
-
-        this.HeadPosition = new Vector(tailnode.pos.x, tailnode.pos.y);
-
-        this.HeadNode.pos.x = this.HeadPosition.x
-        this.HeadNode.pos.y = this.HeadPosition.y
-        this.movestack();
+    poop(node, number) {
+        for (let i = 0; i < number; i++) {
+            foods.push(new food(random(node.pos.x - node.dia / 2, node.pos.x + node.dia / 2),
+                random(node.pos.y - node.dia / 2, node.pos.y + node.dia / 2), 20,
+                color(random(255), random(255), random(255))));
+        }
+    }
+    grow() {
+        this.balls.push(new ball(players[0].temppos.x, players[0].temppos.y, players[0].size, players[0].color))
+        this.nodecount++
     }
 
-    eatfood() {
-        console.log("eat");
-        let newnode = new ball(0, 0, this.size, this.color);
-        newnode.isTail = true;
-        this.gettail(0).isTail = false;
-        this.pushStart(newnode)
-        newnode.pos.x = this.temppos.x
-        newnode.pos.y = this.temppos.y
-
-        this.ballcount++
-    }
-
-
-    fail() {
-
-
-
-    }
 }
