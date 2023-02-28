@@ -6,17 +6,10 @@ class Viewport {
     update() {
 
         let targetpos = createVector(this.target.HeadNode.pos.x, this.target.HeadNode.pos.y);
-
-        // if (targetpos.x < (-WorldSize / 2) + (width / 2) || targetpos.x > (WorldSize / 2) - (width / 2) || targetpos.y < (-WorldSize / 2) + (height / 2) || targetpos.y > (WorldSize / 2) - (height / 2)) {
-
-        //     // this.pos = p5.Vector.lerp(this.pos, targetpos, 0.0)
-        //     console.log("LOL");
-        // }
-
         let finalposx = constrain(targetpos.x, (-WorldSize / 2) + (width / 2)-50, (WorldSize / 2) - (width / 2)+50)
         let finalposy = constrain(targetpos.y, (-WorldSize / 2) + (height / 2)-50, (WorldSize / 2) - (height / 2)+50)
-        let newtarger = createVector(finalposx, finalposy)
-        this.pos = p5.Vector.lerp(this.pos, newtarger, 0.01)
+        let newtarget = createVector(finalposx, finalposy)
+        this.pos = p5.Vector.lerp(this.pos, newtarget, 0.01)
 
         fill(0, 255, 0)
         ellipse(this.pos.x, this.pos.y, 5)

@@ -6,7 +6,7 @@ class Player {
         this.color = color
         this.balls = [];
         this.ballsize = 50;
-        this.score = 0
+        this.score = 15 * this.nodecount
         this.temppos;
         this.sprint = false;
         this.cansprint = true;
@@ -72,6 +72,7 @@ class Player {
             foods.push(new food(random(node.pos.x - node.dia / 2, node.pos.x + node.dia / 2),
                 random(node.pos.y - node.dia / 2, node.pos.y + node.dia / 2), 20,
                 color(random(255), random(255), random(255))));
+            this.score--
         }
     }
     grow() {

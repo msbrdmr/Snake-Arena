@@ -10,11 +10,11 @@ let foods = []
 let players = []
 
 let WorldSize = 3000;
-let foodcount = 300;
+let foodcount = 500;
 let player;
 
 function setup() {
-	canvas = createCanvas(900, 900).position((windowWidth - width) / 2, (windowHeight - height) / 2);
+	canvas = createCanvas(1500, 880).position((windowWidth - width) / 2, (windowHeight - height) / 2);
 	let density = displayDensity();
 	pixelDensity(density);
 	canvas.parent("canvas");
@@ -24,57 +24,52 @@ function setup() {
 			random(-WorldSize / 2, WorldSize / 2), 20,
 			color(random(255), random(255), random(255))));
 	}
-	spawnplayer();
+	// spawnplayer();
 }
 function draw() {
-	background(0)
-	translate(-viewport.pos.x + width / 2, -viewport.pos.y + height / 2)
-
-	drawmap()
-
-
-	let dir_ = new Vector(Math.sin(player.angle), Math.cos(player.angle));
-	if (players.length != 0)
-		players[0].dir = dir_;
+	background(15)
 
 
 
-	for (let food of foods) {
-		food.drawfood()
-	}
-	setdirection();
-	for (let player of players) {
-		if (player.balls.length >= 10) player.cansprint = true;
-		else player.cansprint = false
-		if (player.isStarted && !player.finished) {
-			if (keyIsDown(UP_ARROW)) {
-				if (player.cansprint) {
-					player.speed = lerp(player.speed, player.defaultspeed * 2, 0.05)
-					player.sprint = true;
+
+
+	if (players.length != 0) {
+		translate(-viewport.pos.x + width / 2, -viewport.pos.y + height / 2)
+		drawmap()
+
+		setdirection();
+		for (let player of players) {
+			if (player.balls.length >= 10) player.cansprint = true;
+			else player.cansprint = false
+			if (player.isStarted && !player.finished) {
+				if (keyIsDown(UP_ARROW)) {
+					if (player.cansprint) {
+						player.speed = lerp(player.speed, player.defaultspeed * 2, 0.05)
+						player.sprint = true;
+					}
+					else {
+						player.speed = lerp(player.speed, player.defaultspeed, 0.05)
+						player.sprint = false;
+					}
 				}
 				else {
 					player.speed = lerp(player.speed, player.defaultspeed, 0.05)
 					player.sprint = false;
 				}
-			}
-			else {
-				player.speed = lerp(player.speed, player.defaultspeed, 0.05)
-				player.sprint = false;
-			}
 
-			player.move()
-			checkFail()
-			checkFoodCollision()
-			
-			
+				player.move()
+				checkFail()
+				checkFoodCollision()
+			}
+			player.draw();
+			viewport.update()
 		}
-		
 	}
-	player.draw();
-	viewport.update()
+
+
 }
 function spawnplayer() {
-	player = new Player(0, 0, 20, "player1", "#ffd14e", 0.2, 50)
+	player = new Player(0, 0, 15, "player1", "#ffd14e", 0.2, 50)
 	player.isStarted = true;
 	player.finished = false;
 	player.init()
@@ -83,6 +78,9 @@ function spawnplayer() {
 	spawned = true;
 }
 function setdirection() {
+	let dir_ = new Vector(Math.sin(player.angle), Math.cos(player.angle));
+	players[0].dir = dir_
+
 	for (let player of players) {
 		if (keyIsDown(LEFT_ARROW)) {
 			player.angle += 0.05;
@@ -92,7 +90,6 @@ function setdirection() {
 		}
 	}
 }
-
 function randomfood() {
 	let newfood = new food(random(-WorldSize / 2, WorldSize / 2),
 		random(-WorldSize / 2, WorldSize / 2), 20,
@@ -102,8 +99,8 @@ function randomfood() {
 function windowResized() {
 	canvas.position((windowWidth - width) / 2, (windowHeight - height) / 2);
 }
-
 function drawmap() {
+
 	fill(255, 52)//color of 
 	stroke(127)
 	strokeWeight(10);
@@ -121,9 +118,11 @@ function drawmap() {
 		line(-WorldSize / 2, (-WorldSize / 2) + gridboxsize * i,
 			WorldSize / 2, (-WorldSize / 2) + gridboxsize * i)
 	}
+	for (let food of foods) {
+		food.drawfood()
+	}
 }
 function checkFoodCollision() {
-
 	for (let player of players) {
 		for (let food of foods) {
 			if (distance(food, player.HeadNode) <= food.dia / 2 + player.HeadNode.dia / 2 + 50) {
@@ -136,15 +135,15 @@ function checkFoodCollision() {
 						player.grow();
 						player.foodcount = 0;
 					}
-					removefromarray(foods.indexOf(food), foods)
+					removefromarray(food, foods)
 					randomfood();
 				}
 			}
 		}
 	}
 }
-function removefromarray(i, array) {
-	array.splice(i, 1)
+function removefromarray(element, array) {
+	array.splice(array.indexOf(element), 1)
 }
 function distance(a, b) {
 	return Math.sqrt(((b.pos.x - a.pos.x) * (b.pos.x - a.pos.x)) + ((b.pos.y - a.pos.y) * (b.pos.y - a.pos.y)))
@@ -156,18 +155,17 @@ function checkFail() {
 			player.HeadNode.pos.y - (player.HeadNode.dia / 2) <= (-WorldSize / 2) ||
 			player.HeadNode.pos.y + (player.HeadNode.dia / 2) >= (WorldSize / 2)) {
 			player.isStarted = false;
-			let interval = setInterval(doStuff, 200); // 2000 ms = start after 2sec 
+			let interval = setInterval(doStuff, 450 / player.nodecount); // 2000 ms = start after 2sec 
+			console.log(450 / player.nodecount);
 			function doStuff() {
 				if (player.balls.length == 0) {
 					player.finished = true
-					let index = players.indexOf(player)
-					players.splice(index, 1);
+					removefromarray(player, players)
 					spawnplayer()
 					clearInterval(interval);
 				}
 				else {
 					let currentnode = player.balls[player.balls.length - 1]
-					console.log("x: ", currentnode.pos.x, " y: ", currentnode.pos.y);
 					for (let i = 0; i < 2; i++) {
 						foods.push(new food(random(currentnode.pos.x - (currentnode.dia / 2), currentnode.pos.x + (currentnode.dia / 2)), random(currentnode.pos.y - (currentnode.dia / 2), currentnode.pos.y + (currentnode.dia / 2)), 20, color(random(255), random(255), random(255))));
 					}
@@ -175,5 +173,14 @@ function checkFail() {
 				}
 			}
 		}
+	}
+}
+
+
+
+function removeallplayers() {
+	for (let i = 0; i < players.length; i++) {
+		players.pop()
+
 	}
 }
