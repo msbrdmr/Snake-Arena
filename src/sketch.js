@@ -24,16 +24,13 @@ function setup() {
 			random(-WorldSize / 2, WorldSize / 2), 20,
 			color(random(255), random(255), random(255))));
 	}
-	// spawnplayer();
+	spawnplayer();
 }
 function draw() {
 	background(15)
 
-
-
-
-
 	if (players.length != 0) {
+		//check if the playeer that we are going to control is us !!
 		translate(-viewport.pos.x + width / 2, -viewport.pos.y + height / 2)
 		drawmap()
 
