@@ -6,8 +6,8 @@ class Viewport {
     update() {
 
         let targetpos = createVector(this.target.HeadNode.pos.x, this.target.HeadNode.pos.y);
-        let finalposx = constrain(targetpos.x, (-WorldSize / 2) + (width / 2)-50, (WorldSize / 2) - (width / 2)+50)
-        let finalposy = constrain(targetpos.y, (-WorldSize / 2) + (height / 2)-50, (WorldSize / 2) - (height / 2)+50)
+        let finalposx = constrain(targetpos.x, (-WorldSize / 2) + (width / 2) - 50, (WorldSize / 2) - (width / 2) + 50)
+        let finalposy = constrain(targetpos.y, (-WorldSize / 2) + (height / 2) - 50, (WorldSize / 2) - (height / 2) + 50)
         let newtarget = createVector(finalposx, finalposy)
         this.pos = p5.Vector.lerp(this.pos, newtarget, 0.01)
 
@@ -18,6 +18,7 @@ class Viewport {
         fill(255, 0, 0);
         stroke(0)
         strokeWeight(5)
+        text(this.target.name, this.target.HeadNode.pos.x, this.target.HeadNode.pos.y)
         text("Score: " + this.target.score, this.pos.x - width / 2 + 20, this.pos.y - height / 2 + 50);
 
     }

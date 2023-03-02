@@ -9,9 +9,13 @@ let spawned = false;
 let foods = []
 let players = []
 
-let WorldSize = 3000;
-let foodcount = 500;
+let WorldSize = 5000
+	;
+let foodcount = 750;
 let player;
+let input;
+let inputval;
+
 
 function setup() {
 	canvas = createCanvas(1500, 880).position((windowWidth - width) / 2, (windowHeight - height) / 2);
@@ -24,7 +28,16 @@ function setup() {
 			random(-WorldSize / 2, WorldSize / 2), 20,
 			color(random(255), random(255), random(255))));
 	}
-	spawnplayer();
+	strokeWeight(1)
+	createinputElement();
+}
+function createinputElement() {
+	input = createInput();
+	input.position((windowWidth - width) / 2 + 380 + 120, (windowHeight - height) / 2 + 423);
+	input.size(430, 30)
+	input.input(() => {
+		inputval = input.value();
+	})
 }
 function draw() {
 	background(15)
@@ -33,7 +46,6 @@ function draw() {
 		//check if the playeer that we are going to control is us !!
 		translate(-viewport.pos.x + width / 2, -viewport.pos.y + height / 2)
 		drawmap()
-
 		setdirection();
 		for (let player of players) {
 			if (player.balls.length >= 10) player.cansprint = true;
@@ -62,17 +74,59 @@ function draw() {
 			viewport.update()
 		}
 	}
+	else {
+		drawmap()
+		drawForm()
+		translate(width / 2, height / 2)
+	}
+
 
 
 }
-function spawnplayer() {
-	player = new Player(0, 0, 15, "player1", "#ffd14e", 0.2, 50)
+function drawForm() {
+	rectMode(CENTER);
+	stroke(0)
+	strokeWeight(2)
+
+	fill("#ffffff")
+	rect(width / 2 - 150 + 120, height / 2, 500, 50, 30, 30, 30, 30)
+	if (mouseX > width / 2 + 150 + 120 - 40 && mouseX < width / 2 + 150 + 120 + 40 && mouseY > height / 2 - 25 && mouseY < height / 2 + 25) {
+		fill("#00a755")
+		cursor(HAND)
+	}
+
+	else {
+		fill("#3ae972")
+		cursor(ARROW)
+	}
+	noStroke()
+	rect(width / 2 + 150 + 120, height / 2, 80, 50, 30, 30, 30, 30)
+	fill("#141417")
+	textStyle(BOLD)
+	textSize(30)
+	strokeWeight(2)
+	text("Go", width / 2 + 150 + 100, height / 2 + 10)
+
+}
+function spawnplayer(name) {
+	player = new Player(0, 0, 15, name, "#ffd14e", 0.2, 50)
 	player.isStarted = true;
 	player.finished = false;
 	player.init()
 	viewport = new Viewport(player.HeadPosition.x, player.HeadPosition.y, player);
 	players.push(player)
 	spawned = true;
+}
+
+function mouseClicked() {
+	if (players.length == 0) {
+		if (mouseX > width / 2 + 150 + 120 - 40 && mouseX < width / 2 + 150 + 120 + 40 && mouseY > height / 2 - 25 && mouseY < height / 2 + 25) {
+			console.log(inputval);
+			spawnplayer(inputval)
+			input.remove()
+			cursor(ARROW)
+		}
+	}
 }
 function setdirection() {
 	let dir_ = new Vector(Math.sin(player.angle), Math.cos(player.angle));
@@ -95,6 +149,9 @@ function randomfood() {
 }
 function windowResized() {
 	canvas.position((windowWidth - width) / 2, (windowHeight - height) / 2);
+	input.position((windowWidth - width) / 2 + 380 + 120, (windowHeight - height) / 2 + 423);
+
+
 }
 function drawmap() {
 
@@ -158,7 +215,7 @@ function checkFail() {
 				if (player.balls.length == 0) {
 					player.finished = true
 					removefromarray(player, players)
-					spawnplayer()
+					createinputElement()
 					clearInterval(interval);
 				}
 				else {
