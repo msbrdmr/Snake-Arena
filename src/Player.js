@@ -79,5 +79,4 @@ class Player {
         this.balls.push(new ball(players[0].temppos.x, players[0].temppos.y, players[0].size, players[0].color))
         this.nodecount++
     }
-
 }

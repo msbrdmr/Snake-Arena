@@ -9,8 +9,7 @@ let spawned = false;
 let foods = []
 let players = []
 
-let WorldSize = 5000
-	;
+let WorldSize = 5000;
 let foodcount = 750;
 let player;
 let input;
@@ -80,8 +79,6 @@ function draw() {
 		translate(width / 2, height / 2)
 	}
 
-
-
 }
 function drawForm() {
 	rectMode(CENTER);
@@ -150,8 +147,6 @@ function randomfood() {
 function windowResized() {
 	canvas.position((windowWidth - width) / 2, (windowHeight - height) / 2);
 	input.position((windowWidth - width) / 2 + 380 + 120, (windowHeight - height) / 2 + 423);
-
-
 }
 function drawmap() {
 
@@ -235,6 +230,5 @@ function checkFail() {
 function removeallplayers() {
 	for (let i = 0; i < players.length; i++) {
 		players.pop()
-
 	}
 }
