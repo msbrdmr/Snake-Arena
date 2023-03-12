@@ -55,7 +55,7 @@ class Player {
             }
         }
 
-        if (this.sprint) {
+        if (this.sprint) { 
             if (this.stepcount % 50 == 0) {
 
                 this.balls.pop()
